@@ -15,42 +15,47 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 
+//Chave para a memória compartilhada
 #define KEY 5678
-
+//Struct do tipo intervalo, onde o array começa e termina.
 typedef struct Interval {
     int start;
     int end;
 } Interval;
 
+//O primeiro e segundo argumento é o número de elementos e o número de processos.
 int main(int argc, char **argv) {
-
+    //Caso não tenha 3 argumentos, sai.
     if (argc != 3) {
         fprintf(stderr, "Usage: %s <num_elements> <num_processes>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
 
+    //Define o número de elementos e de processos.
     int num_elements = atoi(argv[1]);
     int num_process = atoi(argv[2]);
 
     int size_per_child = num_elements / num_process;
 
-    // Create shared memory
+    // Cria memória compartilhada.
     int shm_v1   = shmget(KEY, num_elements * sizeof(int), IPC_CREAT | 0666);
     int shm_v2   = shmget(KEY + 1, num_elements * sizeof(int), IPC_CREAT | 0666);
     int shm_v3   = shmget(KEY + 2, num_elements * sizeof(int), IPC_CREAT | 0666);
     int shm_done = shmget(KEY + 3, num_process   * sizeof(int), IPC_CREAT | 0666);
-
+    
+    //Falha ao criar, sai.
     if (shm_v1 < 0 || shm_v2 < 0 || shm_v3 < 0 || shm_done < 0) {
         perror("Shared memory creation failed");
         exit(1);
     }
 
+    //Atribui a memória compartilhada.
     int *v1 = shmat(shm_v1, NULL, 0);
     int *v2 = shmat(shm_v2, NULL, 0);
     int *v3 = shmat(shm_v3, NULL, 0);
     int *done = shmat(shm_done, NULL, 0);
 
-    // Initialize V1 and V2
+    // Inicializa v1 e v2.
     for (int i = 0; i < num_elements; i++) {
         v1[i] = i;
         v2[i] = i * 2;
@@ -58,7 +63,7 @@ int main(int argc, char **argv) {
 
     memset(done, 0, num_process * sizeof(int));
 
-    // Create pipes
+    // Cria pipes.
     int pipes[num_process][2];
     for (int i = 0; i < num_process; i++) {
         if (pipe(pipes[i]) == -1) {
@@ -67,7 +72,7 @@ int main(int argc, char **argv) {
         }
     }
 
-    // Fork processes
+    // Cria processos filhos.
     for (int i = 0; i < num_process; i++) {
         pid_t pid = fork();
 
@@ -76,8 +81,8 @@ int main(int argc, char **argv) {
             exit(EXIT_FAILURE);
         }
 
-        if (pid == 0) { // child
-            close(pipes[i][1]); // close write end
+        if (pid == 0) { // Filho
+            close(pipes[i][1]); // Fecha o "escrever" do pipe
             Interval intervalo;
             read(pipes[i][0], &intervalo, sizeof(Interval));
             close(pipes[i][0]);
@@ -93,14 +98,15 @@ int main(int argc, char **argv) {
 
             doned[i] = 1;
 
+            //Libera memória
             shmdt(v1d);
             shmdt(v2d);
             shmdt(v3d);
             shmdt(doned);
             exit(0);
 
-        } else { // parent
-            close(pipes[i][0]); // close read end
+        } else { // pai
+            close(pipes[i][0]); // Fecha o "ler" do pipe
             Interval intervalo;
             intervalo.start = i * size_per_child;
             intervalo.end = (i == num_process - 1) ? num_elements : intervalo.start + size_per_child;
@@ -109,18 +115,18 @@ int main(int argc, char **argv) {
         }
     }
 
-    // Wait for children
+    // Espera pelos filhos
     for (int i = 0; i < num_process; i++) {
         wait(NULL);
     }
 
-    // Print result
+    // Imprime os resultados
     printf("Resultado da soma:\n");
     for (int i = 0; i < num_elements; i++) {
         printf("V3[%d] = %d\n", i, v3[i]);
     }
 
-    // Clean up
+    // Libera memória
     shmdt(v1);
     shmdt(v2);
     shmdt(v3);
