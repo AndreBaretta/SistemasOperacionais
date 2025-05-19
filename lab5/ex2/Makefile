@@ -14,6 +14,7 @@ $(TARGET): $(SRC)
 
 install: $(TARGET)
 	sudo cp $(TARGET) $(BINDIR)
+	rm -f $(TARGET)
 
 uninstall:
 	sudo rm -f $(BINDIR)/$(TARGET)
