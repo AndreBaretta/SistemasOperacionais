@@ -1,3 +1,12 @@
+// - Descrição:............ Este programa realiza a soma de dois vetores inteiros utilizando processos filhos 
+//                          para dividir e paralelizar o trabalho. Os dados dos vetores são armazenados em memória compartilhada, 
+//                          permitindo que todos os processos acessem e modifiquem os mesmos dados. A divisão do trabalho é feita através de pipes, 
+//                          pelos quais o processo pai envia a cada filho um intervalo de índices que ele deve processar. 
+//                          O número de elementos dos vetores e a quantidade de processos filhos são informados pelo usuário.
+// // - Autor:................ Henry Meneguini Farias
+// // - Data de Criação:...... 17/05/2025
+// - Data de Atualização:.. 18/05/2025
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
