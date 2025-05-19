@@ -1,3 +1,8 @@
+// - Descrição:............ Codigo que envia mensagens por um socket e printa a resposta
+// - Autor:................ André Felipe Baretta
+// - Data de Criação:...... 17/05/2025
+// - Data de Atualização:.. 18/05/2025
+
 #include <sys/socket.h>
 #include <stdlib.h>
 #include <sys/un.h>

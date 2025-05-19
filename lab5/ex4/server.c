@@ -1,3 +1,8 @@
+// - Descrição:............ Codigo que recebe mensagens por um socket e traduz a mensagem para outra lingua
+// - Autor:................ André Felipe Baretta
+// - Data de Criação:...... 17/05/2025
+// - Data de Atualização:.. 18/05/2025
+
 #include <sys/socket.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -22,6 +27,7 @@ word words[] = {
 
 int dictionary_size = sizeof(words) / sizeof(words[0]);
 
+// função para traduzir
 char* translate(char* input);
 
 int main(int argc, char** argv){
@@ -97,6 +103,7 @@ int main(int argc, char** argv){
    return 0;
 }
 
+// função para traduzir a mensagem
 char* translate(char* input){
    // Copia a string de entrada
    char buffer[100];

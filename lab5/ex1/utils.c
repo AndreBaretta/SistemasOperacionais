@@ -1,3 +1,9 @@
+// - Descrição:............ Codigo que lê mensagens de um FIFO e exibe na tela junto com
+//                               o número de vogais, consoantes e espaços
+// - Autor:................ André Felipe Baretta
+// - Data de Criação:...... 17/05/2025
+// - Data de Atualização:.. 18/05/2025
+
 #include <utils.h>
 
 typedef struct {
@@ -7,6 +13,7 @@ typedef struct {
    int spaces;
 } msg_info;
 
+// Checa se a letra é uma vogal
 int is_vowel(char chr){
    char vowels[10] = "AaEeIiOoUu";
    for(int i = 0; i < 10; i++){
@@ -16,6 +23,7 @@ int is_vowel(char chr){
    return 0;
 }
 
+// Corre pela string e calcula tamanho e numero de: vogais, consoantes e espaços
 msg_info get_string_info(char* string){
    int size = strlen(string);
    int consonants = 0;

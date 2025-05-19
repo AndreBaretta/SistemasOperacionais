@@ -4,7 +4,6 @@
 // - Data de Criação:...... 17/05/2025
 // - Data de Atualização:.. 18/05/2025
 
-
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <unistd.h>

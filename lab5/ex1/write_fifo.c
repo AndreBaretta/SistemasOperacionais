@@ -3,7 +3,6 @@
 // - Data de Criação:...... 17/05/2025
 // - Data de Atualização:.. 18/05/2025
 
-
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
