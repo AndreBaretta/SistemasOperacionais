@@ -66,18 +66,11 @@ int main(int argc, char** argv){
          perror("accept error");
          continue;
       }
-
-      if(received_bytes == -1){
-         perror("read");
-         exit(-1);
-      } else if(received_bytes == 0){
-         printf("EOF\n");
-         close(client_socket);
-      }
       
       while((received_bytes = read(client_socket, buf, sizeof(buf))) > 0){
          pid_t pid = fork();
          if (pid == 0) { // processo filho
+            close(server_socket);
             // lê uma mensagem e responde
             buf[received_bytes] = '\0';
             if (received_bytes > 0) {
@@ -85,6 +78,7 @@ int main(int argc, char** argv){
                printf("[Filho %d] Tradução para: %s\n", getpid(), buf);
 
                char* resultado = translate(buf);
+
                if (resultado != NULL) {
                   printf("tradução: %s\n", resultado);
                   write(client_socket, resultado, strlen(resultado));
@@ -107,6 +101,11 @@ char* translate(char* input){
    // Copia a string de entrada
    char buffer[100];
    strncpy(buffer, input, sizeof(buffer));
+   if(!strcspn(buffer,":"))
+      return NULL;
+   if(strcspn(buffer,"-"))
+      return NULL;
+   
    buffer[sizeof(buffer)-1] = '\0';
 
    // Divide em partes: idioma_origem-idioma_destino:palavra
